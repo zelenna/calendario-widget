@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Calendário</title>
+
+<style>
+body{
+  margin:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:transparent;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.calendar{
+  width:230px;
+  background:#4f6fb3;
+  color:#fff;
+  border-radius:18px;
+  padding:14px;
+}
+
+.month{
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.weekdays,.days{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  text-align:center;
+  font-size:12px;
+}
+
+.weekdays div{opacity:.8}
+
+.days div{
+  padding:6px 0;
+  border-radius:50%;
+}
+
+.today{
+  background:#2f80ff;
+  font-weight:600;
+}
+.empty{visibility:hidden}
+</style>
+</head>
+
+<body>
+<div class="calendar">
+  <div class="month" id="month"></div>
+  <div class="weekdays">
+    <div>M</div><div>T</div><div>W</div>
+    <div>T</div><div>F</div><div>S</div><div>S</div>
+  </div>
+  <div class="days" id="days"></div>
+</div>
+
+<script>
+const months=[
+"Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+"Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+];
+const d=new Date();
+const month=d.getMonth();
+const year=d.getFullYear();
+document.getElementById("month").innerText=
+months[month]+" "+year;
+
+const first=new Date(year,month,1).getDay();
+const total=new Date(year,month+1,0).getDate();
+const start=first===0?6:first-1;
+
+for(let i=0;i<start;i++){
+  document.getElementById("days")
+  .appendChild(document.createElement("div"))
+  .classList.add("empty");
+}
+
+for(let i=1;i<=total;i++){
+  const el=document.createElement("div");
+  el.innerText=i;
+  if(i===d.getDate()) el.classList.add("today");
+  document.getElementById("days").appendChild(el);
+}
+</script>
+</body>
+</html>
