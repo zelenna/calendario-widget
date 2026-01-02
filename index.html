@@ -2,12 +2,18 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Calendário Dark</title>
 
 <style>
-body {
+html, body {
   margin: 0;
-  background: transparent;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent !important;
+  overflow: hidden;
+}
+
+body {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -15,7 +21,8 @@ body {
 }
 
 .calendar {
-  width: 230px;
+  width: 100%;
+  max-width: 240px;
   background: #121212;
   color: #ffffff;
   border-radius: 18px;
@@ -23,13 +30,40 @@ body {
   box-sizing: border-box;
 }
 
-.month {
-  font-size: 16px;
-  font-weight: 600;
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 10px;
+}
+
+.month {
+  font-size: 15px;
+  font-weight: 600;
   text-transform: capitalize;
 }
 
+.nav {
+  display: flex;
+  gap: 6px;
+}
+
+.nav button {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+
+.nav button:hover {
+  background: rgba(155, 89, 255, 0.25);
+}
+
+/* Grid */
 .weekdays, .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -72,7 +106,11 @@ body {
 <body>
 
 <div class="calendar">
-  <div class="month" id="monthYear"></div>
+  <div class="header">
+    <button id="prev">‹</button>
+    <div class="month" id="monthYear"></div>
+    <button id="next">›</button>
+  </div>
 
   <div class="weekdays">
     <div>Seg</div><div>Ter</div><div>Qua</div>
@@ -88,46 +126,70 @@ const meses = [
   "julho","agosto","setembro","outubro","novembro","dezembro"
 ];
 
+let dataAtual = new Date();
+let mesAtual = dataAtual.getMonth();
+let anoAtual = dataAtual.getFullYear();
 const hoje = new Date();
-const mes = hoje.getMonth();
-const ano = hoje.getFullYear();
-const diaHoje = hoje.getDate();
 
-document.getElementById("monthYear").innerText =
-  `${meses[mes]} ${ano}`;
-
-const primeiroDia = new Date(ano, mes, 1).getDay();
-const totalDias = new Date(ano, mes + 1, 0).getDate();
-const inicio = primeiroDia === 0 ? 6 : primeiroDia - 1;
-
+const monthYear = document.getElementById("monthYear");
 const daysContainer = document.getElementById("days");
 
-// espaços vazios
-for (let i = 0; i < inicio; i++) {
-  const empty = document.createElement("div");
-  empty.classList.add("empty");
-  daysContainer.appendChild(empty);
-}
+function renderCalendar() {
+  daysContainer.innerHTML = "";
+  monthYear.innerText = `${meses[mesAtual]} ${anoAtual}`;
 
-// dias
-for (let d = 1; d <= totalDias; d++) {
-  const dayEl = document.createElement("div");
-  dayEl.innerText = d;
+  const primeiroDia = new Date(anoAtual, mesAtual, 1).getDay();
+  const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
+  const inicio = primeiroDia === 0 ? 6 : primeiroDia - 1;
 
-  if (d === diaHoje) {
-    dayEl.classList.add("today");
+  for (let i = 0; i < inicio; i++) {
+    const empty = document.createElement("div");
+    empty.classList.add("empty");
+    daysContainer.appendChild(empty);
   }
 
-  dayEl.addEventListener("click", () => {
-    document
-      .querySelectorAll(".days div")
-      .forEach(el => el.classList.remove("selected"));
+  for (let d = 1; d <= totalDias; d++) {
+    const dayEl = document.createElement("div");
+    dayEl.innerText = d;
 
-    dayEl.classList.add("selected");
-  });
+    if (
+      d === hoje.getDate() &&
+      mesAtual === hoje.getMonth() &&
+      anoAtual === hoje.getFullYear()
+    ) {
+      dayEl.classList.add("today");
+    }
 
-  daysContainer.appendChild(dayEl);
+    dayEl.addEventListener("click", () => {
+      document
+        .querySelectorAll(".days div")
+        .forEach(el => el.classList.remove("selected"));
+      dayEl.classList.add("selected");
+    });
+
+    daysContainer.appendChild(dayEl);
+  }
 }
+
+document.getElementById("prev").onclick = () => {
+  mesAtual--;
+  if (mesAtual < 0) {
+    mesAtual = 11;
+    anoAtual--;
+  }
+  renderCalendar();
+};
+
+document.getElementById("next").onclick = () => {
+  mesAtual++;
+  if (mesAtual > 11) {
+    mesAtual = 0;
+    anoAtual++;
+  }
+  renderCalendar();
+};
+
+renderCalendar();
 </script>
 
 </body>
