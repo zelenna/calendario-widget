@@ -2,90 +2,133 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Calendário</title>
+<title>Calendário Dark</title>
 
 <style>
-body{
-  margin:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:transparent;
+body {
+  margin: 0;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.calendar{
-  width:230px;
-  background:#4f6fb3;
-  color:#fff;
-  border-radius:18px;
-  padding:14px;
+.calendar {
+  width: 230px;
+  background: #121212;
+  color: #ffffff;
+  border-radius: 18px;
+  padding: 14px;
+  box-sizing: border-box;
 }
 
-.month{
-  font-weight:600;
-  margin-bottom:8px;
+.month {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: capitalize;
 }
 
-.weekdays,.days{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  text-align:center;
-  font-size:12px;
+.weekdays, .days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 12px;
 }
 
-.weekdays div{opacity:.8}
-
-.days div{
-  padding:6px 0;
-  border-radius:50%;
+.weekdays div {
+  opacity: 0.7;
+  margin-bottom: 6px;
 }
 
-.today{
-  background:#2f80ff;
-  font-weight:600;
+.days div {
+  padding: 6px 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
 }
-.empty{visibility:hidden}
+
+.days div:hover {
+  background: rgba(155, 89, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.today {
+  background: #9b59ff;
+  font-weight: 600;
+}
+
+.selected {
+  background: rgba(155, 89, 255, 0.5);
+}
+
+.empty {
+  visibility: hidden;
+}
 </style>
 </head>
 
 <body>
+
 <div class="calendar">
-  <div class="month" id="month"></div>
+  <div class="month" id="monthYear"></div>
+
   <div class="weekdays">
-    <div>M</div><div>T</div><div>W</div>
-    <div>T</div><div>F</div><div>S</div><div>S</div>
+    <div>Seg</div><div>Ter</div><div>Qua</div>
+    <div>Qui</div><div>Sex</div><div>Sáb</div><div>Dom</div>
   </div>
+
   <div class="days" id="days"></div>
 </div>
 
 <script>
-const months=[
-"Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-"Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+const meses = [
+  "janeiro","fevereiro","março","abril","maio","junho",
+  "julho","agosto","setembro","outubro","novembro","dezembro"
 ];
-const d=new Date();
-const month=d.getMonth();
-const year=d.getFullYear();
-document.getElementById("month").innerText=
-months[month]+" "+year;
 
-const first=new Date(year,month,1).getDay();
-const total=new Date(year,month+1,0).getDate();
-const start=first===0?6:first-1;
+const hoje = new Date();
+const mes = hoje.getMonth();
+const ano = hoje.getFullYear();
+const diaHoje = hoje.getDate();
 
-for(let i=0;i<start;i++){
-  document.getElementById("days")
-  .appendChild(document.createElement("div"))
-  .classList.add("empty");
+document.getElementById("monthYear").innerText =
+  `${meses[mes]} ${ano}`;
+
+const primeiroDia = new Date(ano, mes, 1).getDay();
+const totalDias = new Date(ano, mes + 1, 0).getDate();
+const inicio = primeiroDia === 0 ? 6 : primeiroDia - 1;
+
+const daysContainer = document.getElementById("days");
+
+// espaços vazios
+for (let i = 0; i < inicio; i++) {
+  const empty = document.createElement("div");
+  empty.classList.add("empty");
+  daysContainer.appendChild(empty);
 }
 
-for(let i=1;i<=total;i++){
-  const el=document.createElement("div");
-  el.innerText=i;
-  if(i===d.getDate()) el.classList.add("today");
-  document.getElementById("days").appendChild(el);
+// dias
+for (let d = 1; d <= totalDias; d++) {
+  const dayEl = document.createElement("div");
+  dayEl.innerText = d;
+
+  if (d === diaHoje) {
+    dayEl.classList.add("today");
+  }
+
+  dayEl.addEventListener("click", () => {
+    document
+      .querySelectorAll(".days div")
+      .forEach(el => el.classList.remove("selected"));
+
+    dayEl.classList.add("selected");
+  });
+
+  daysContainer.appendChild(dayEl);
 }
 </script>
+
 </body>
 </html>
